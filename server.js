@@ -1,85 +1,95 @@
 const express = require('express');
 const cors = require('cors');
+const brcrypt = require('bcryptjs');
+const knex = require('knex');
 const port = 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const database = {
-    users: [
-        {
-            id: "1",
-            name: "tester",
-            email: "tester@gmail.com",
-            password: "test",
-            entries: 0,
-            joined_date: new Date()
-        },
-        {
-            id: "2",
-            name: "observer",
-            email: "observer@gmail.com",
-            password: "observer",
-            entries: 0,
-            joined_date: new Date()
-        },
-    ]
-};
+const database = knex({
+    client: 'pg',
+    connection: {
+      host: '127.0.0.1',
+      user: 'postgres',
+      password: '1234',
+      database: 'facerecognitiondb',
+    },
+});
 
 app.get('/', (req, res) => {
     res.send(database.users);
 });
 
 app.post('/signin', (req, res) => {
-    if (req.body.email === database.users[0].email && 
-        req.body.password === database.users[0].password) {
-        res.json(database.users[0]);
-    }
-    else {
-        res.status(400).json('login error');
-    }
+    database.select('email', 'hash').from('login')
+        .where('email', '=', req.body.email)
+        .then(data => {
+            const isValid = brcrypt.compare(req.body.password, data[0].hash);
+            if (isValid){
+                return database.select('*').from('users')
+                    .where('email', '=', req.body.email)
+                    .then(user => {
+                        res.json(user[0].user)
+                    })
+                    .catch(err => res.status(400).json('unable to retrieve user credentials'));
+            }
+            else {
+                res.status(400).json('wrong credentials');
+            }
+        })
+        .catch(err => res.status(400).json('wrong credentials'));
 });
 
 app.post('/register', (req, res) => {
     const { email, name, password } = req.body;
-    database.users.push({
-            id: "3",
-            name: name,
+    const hash = brcrypt.hashSync(password, 10);
+    database.transaction(trx =>{
+        trx.insert({
+            hash: hash,
             email: email,
-            password: password,
-            entries: 0,
-            joined_data: new Date()
+        })
+        .into('login')
+        .returning('email')
+        .then(loginEmail => {
+            return database('users')
+                .returning('*')
+                .insert({
+                    name: name,
+                    email: email,
+                    joined: new Date()
+                })
+                .then(user => res.json(user[0]))
+                .catch(err => res.status(400).json('unable to register'));
+        })
+        .then(trx.commit)
+        .catch(trx.rollback)
     });
-    res.json(database.users[database.users.length-1]);
+
+    
 });
 
 app.get('/profile/:id', (req, res) => {
     const { id } = req.params;
-    let found = false;
-    database.users.forEach(user => {
-        if (user.id === id) {
-            found = true;
-            return res.json(user);
-        }
-    });
-    if (!found) {
-        res.status(404).json("user does not exist");
-    }
+    database.select('*').from('users').where({ id })
+        .then(user => {
+            if (user.length) {
+                res.json(user[0]);
+            }
+            else {
+                res.status(400).json('unable to retrieve user');
+            }
+        })
+        .catch(err => res.status(400).json('an error occured while retrieving the user'));
 });
 
 app.put('/image', (req, res) => {
     const { id } = req.body;
-    let found = false;
-    database.users.forEach(user => {
-        if (user.id === id) {
-            found = true;
-            user.entries++;
-            return res.json(user.entries);
-        }
-    })
-    if (!found) {
-        res.status(404).json("user does not exist");
-    }
+    database('users').where('id', '=', id)
+        .increment('entries', 1)
+        .returning('entries')
+        .then(entries => res.json(entries[0].entries))
+        .catch(err => res.json('unable to retrieve entries'));
 });
 
 app.listen(port, () => {
