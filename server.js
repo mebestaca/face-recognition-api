@@ -12,7 +12,7 @@ const database = knex({
     connection: {
       host: '127.0.0.1',
       user: 'postgres',
-      password: '1234',
+      password: '123456',
       database: 'facerecognitiondb',
     },
 });
@@ -88,7 +88,7 @@ app.put('/image', (req, res) => {
     database('users').where('id', '=', id)
         .increment('entries', 1)
         .returning('entries')
-        .then(entries => res.json(entries[0].entries))
+        .then(entries =>  res.json(entries[0].entries))
         .catch(err => res.json('unable to retrieve entries'));
 });
 
