@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const register = require('./controllers/register');
+const signin = require('./controllers/signin');
 const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const port = 3000;
@@ -22,25 +23,7 @@ app.get('/', (req, res) => {
     res.send(database.users);
 });
 
-app.post('/signin', (req, res) => {
-    database.select('email', 'hash').from('login')
-        .where('email', '=', req.body.email)
-        .then(data => {
-            const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-            if (isValid){
-                return database.select('*').from('users')
-                    .where('email', '=', req.body.email)
-                    .then(user => {
-                        res.json(user[0])
-                    })
-                    .catch(err => res.status(400).json('unable to retrieve user credentials'));
-            }
-            else {
-                res.status(400).json('wrong credentials');
-            }
-        })
-        .catch(err => res.status(400).json('wrong credentials'));
-});
+app.post('/signin', (req, res) => { signin.handleSignIn(req, res, database, bcrypt) });
 
 app.post('/register', (req, res) => { register.handleRegister(req, res, database, bcrypt) });
 
