@@ -3,6 +3,7 @@ const cors = require('cors');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
+const image = require('./controllers/image');
 const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const port = 3000;
@@ -25,19 +26,9 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => { signin.handleSignIn(req, res, database, bcrypt) });
-
 app.post('/register', (req, res) => { register.handleRegister(req, res, database, bcrypt) });
-
 app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, database) });
-
-app.put('/image', (req, res) => {
-    const { id } = req.body;
-    database('users').where('id', '=', id)
-        .increment('entries', 1)
-        .returning('entries')
-        .then(entries =>  res.json(entries[0].entries))
-        .catch(err => res.json('unable to retrieve entries'));
-});
+app.put('/image', (req, res) => { image.handleImage(req, res, database) } );
 
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
