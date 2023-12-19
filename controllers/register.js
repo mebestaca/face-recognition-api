@@ -22,10 +22,8 @@ const handleRegister = (req, res, database, bcrypt) => {
         .then(trx.commit)
         .catch(trx.rollback)
     });
-
-    
 }
 
 module.exports = {
-    handleRegister: handleRegister
+    handleRegister
 };
