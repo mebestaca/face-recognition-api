@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const profile = require('./controllers/profile');
 const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const port = 3000;
@@ -27,19 +28,7 @@ app.post('/signin', (req, res) => { signin.handleSignIn(req, res, database, bcry
 
 app.post('/register', (req, res) => { register.handleRegister(req, res, database, bcrypt) });
 
-app.get('/profile/:id', (req, res) => {
-    const { id } = req.params;
-    database.select('*').from('users').where({ id })
-        .then(user => {
-            if (user.length) {
-                res.json(user[0]);
-            }
-            else {
-                res.status(400).json('unable to retrieve user');
-            }
-        })
-        .catch(err => res.status(400).json('an error occured while retrieving the user'));
-});
+app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, database) });
 
 app.put('/image', (req, res) => {
     const { id } = req.body;
