@@ -29,6 +29,7 @@ app.post('/signin', (req, res) => { signin.handleSignIn(req, res, database, bcry
 app.post('/register', (req, res) => { register.handleRegister(req, res, database, bcrypt) });
 app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, database) });
 app.put('/image', (req, res) => { image.handleImage(req, res, database) } );
+app.post('/imagedetect', (req, res) => { image.handleImageDetect(req, res) } );
 
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
