@@ -14,10 +14,10 @@ app.use(cors());
 const database = knex({
     client: 'pg',
     connection: {
-      host: '127.0.0.1',
-      user: 'postgres',
-      password: '123456',
-      database: 'facerecognitiondb',
+      host: process.env.REACT_APP_DATABASE_HOST,
+      user: process.env.REACT_APP_DATABASE_USER,
+      password: process.env.REACT_APP_DATABASE_PW,
+      database: process.env.REACT_APP_DATABASE_DB,
     },
 });
 
