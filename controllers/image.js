@@ -1,6 +1,4 @@
-const fetch = require('node-fetch');
-
-const handleImageDetect = (req, res) => {
+const handleImageDetect = (req, res, nodeFetch) => {
     const { imageUrl } = req.body;
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10,8 +8,6 @@ const handleImageDetect = (req, res) => {
 
     // Your PAT (Personal Access Token) can be found in the portal under Authentification
     const PAT = process.env.REACT_APP_PAT;
-
-    console.log('check PAT:', PAT);
     // Specify the correct user_id/app_id pairings
     // Since you're making inferences outside your app's scope
     const USER_ID = process.env.REACT_APP_USER_ID;       
@@ -54,7 +50,7 @@ const handleImageDetect = (req, res) => {
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
 
-    fetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
+    nodeFetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
         .then(response => response.json())
         .then(result => res.json(result))
         .catch(error => console.log('error', error));
