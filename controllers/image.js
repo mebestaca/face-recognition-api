@@ -1,5 +1,6 @@
 const handleImageDetect = (req, res) => {
     const { imageUrl } = req.body;
+    console.log('check image url:', imageUrl);
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // In this section, we set the user authentication, user and app ID, model details, and the URL
     // of the image we want as an input. Change these strings to run your own example.
