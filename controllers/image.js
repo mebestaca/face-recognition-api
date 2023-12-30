@@ -1,6 +1,8 @@
+const fetch = require('node-fetch');
+
 const handleImageDetect = (req, res) => {
     const { imageUrl } = req.body;
-    console.log('check image url:', imageUrl);
+    
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // In this section, we set the user authentication, user and app ID, model details, and the URL
     // of the image we want as an input. Change these strings to run your own example.
@@ -8,6 +10,8 @@ const handleImageDetect = (req, res) => {
 
     // Your PAT (Personal Access Token) can be found in the portal under Authentification
     const PAT = process.env.REACT_APP_PAT;
+
+    console.log('check PAT:', PAT);
     // Specify the correct user_id/app_id pairings
     // Since you're making inferences outside your app's scope
     const USER_ID = process.env.REACT_APP_USER_ID;       
