@@ -1,4 +1,6 @@
-const handleImageDetect = (req, res, nodeFetch) => {
+const fetch = require('node-fetch');
+
+const handleImageDetect = (req, res) => {
     const { imageUrl } = req.body;
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +52,7 @@ const handleImageDetect = (req, res, nodeFetch) => {
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
 
-    nodeFetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
+    fetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
         .then(response => response.json())
         .then(result => res.json(result))
         .catch(error => console.log('error', error));
