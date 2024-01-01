@@ -7,6 +7,7 @@ const image = require('./controllers/image');
 const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const app = express();
+const port = 3000;
 app.use(express.json());
 app.use(cors());
 
@@ -30,6 +31,6 @@ app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, database
 app.put('/image', (req, res) => { image.handleImage(req, res, database) } );
 app.post('/imagedetect', (req, res) => { image.handleImageDetect(req, res) } );
 
-app.listen(() => {
-    console.log(`Server is live...`);
+app.listen(port,() => {
+    console.log(`Server is live... Listening to port: ${port}`);
 });
