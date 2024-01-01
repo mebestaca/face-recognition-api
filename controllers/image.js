@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 const handleImageDetect = (req, res) => {
     const { imageUrl } = req.body;
     
