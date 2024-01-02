@@ -1,7 +1,7 @@
 import('node-fetch').then((nodeFetch) => {
     const fetch = nodeFetch.default; 
 
-    const handleImageDetect = (req, res) => {
+    const handleImageDetect = async (req, res) => {
         const { imageUrl } = req.body;
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,10 +53,16 @@ import('node-fetch').then((nodeFetch) => {
         // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
         // this will default to the latest version_id
     
-        fetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-            .then(response => response.json())
-            .then(result => res.json(result))
-            .catch(error => console.log('error', error));
+        try{
+            const response = await fetch(process.env.REACT_APP_API_URL + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions);
+            const result = await response.json();
+            res.json(result);
+        }
+        catch(error) {
+            console.log('error', error);
+            res.status(500).json({ 'error': 'Internal Server Error' });
+        }
+
     }
     
     const handleImage = (req, res, database) => {
